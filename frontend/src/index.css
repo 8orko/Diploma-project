@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.scale-in {
+    animation: scaleIn 0.2s ease-out forwards;
+}
+
+body {
+    @apply bg-gray-900 text-gray-200;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1f2937; /* gray-800 */
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4b5563; /* gray-600 */
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6b7280; /* gray-500 */
+}
+
+/* Utility Classes for UI Components */
+.glass-panel {
+    @apply bg-gray-800 border border-gray-700 shadow-xl backdrop-blur-sm;
+}
+
+.input-field {
+    @apply w-full bg-gray-700/50 border border-gray-600 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none placeholder-gray-500;
+}
+
+.btn-primary {
+    @apply bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-2.5 px-4 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-[1.02] active:scale-95;
+}
+
+.btn-secondary {
+    @apply bg-gray-700 hover:bg-gray-600 text-white font-bold py-2.5 px-4 rounded-lg shadow-md transform transition-all duration-200 hover:scale-[1.02] active:scale-95;
+}
+
+.card-hover {
+    @apply transition-all duration-200 hover:bg-gray-700/80 hover:shadow-md hover:translate-x-1 border border-transparent hover:border-gray-600;
+}
+
+/* Dark theme for react-big-calendar */
+.rbc-toolbar {
+    @apply text-gray-300 mb-4;
+}
+.rbc-toolbar button {
+    @apply text-white bg-gray-700 hover:bg-gray-600 border-gray-600;
+}
+.rbc-toolbar button:active, .rbc-toolbar button.rbc-active {
+    @apply bg-blue-600;
+}
+
+.rbc-header {
+    @apply text-white border-b-2 border-gray-700;
+    padding: 10px 5px;
+}
+
+.rbc-day-bg, .rbc-month-row {
+    @apply border-gray-700;
+}
+
+.rbc-day-bg.rbc-today,
+.rbc-time-view .rbc-day-slot.rbc-today {
+    background-color: rgba(30, 58, 138, 0.4) !important; /* Darker blue for dark mode */
+    border: none !important;
+}
+
+.rbc-event {
+    @apply rounded-md p-1 text-sm;
+}
+
+.rbc-event-label {
+    @apply font-semibold;
+}
+
+.rbc-event-content {
+    @apply block;
+}
+
+.rbc-time-view, .rbc-month-view {
+    @apply text-gray-300 border-gray-700;
+}
+
+.rbc-time-header, .rbc-time-content {
+    @apply border-gray-700;
+}
+
+.rbc-time-slot {
+    color: #9ca3af; /* gray-400 */
+}
+
+.rbc-current-time-indicator {
+    @apply bg-red-500;
+}
+
+/* Ensure events fill the entire column width */
+.rbc-day-slot .rbc-events-container {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+}
