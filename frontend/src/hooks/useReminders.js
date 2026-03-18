@@ -63,18 +63,18 @@ const useReminders = (remindersEnabled, timeBlocks, tasks, notifiedIds, setNotif
                minutes: diff
              });
 
-             // Notification Logic
-             const key = `${block.id}-${nextStart.format('YYYY-MM-DD')}`;
-             if (!newNotifiedIds.has(key)) {
-                 if ('Notification' in window && Notification.permission === 'granted') {
-                     new Notification(`Upcoming: ${block.label}`, {
-                         body: `Starting in ${diff} minutes at ${nextStart.format('HH:mm')}.${taskNames ? `
-Tasks: ${taskNames}` : ''}`,
-                         icon: '/vite.svg'
-                     });
+             if (isBlockReminder) {
+                 const key = `block-rem-${block.id}-${nextStart.format('YYYY-MM-DD')}`;
+                 if (!newNotifiedIds.has(key)) {
+                     if ('Notification' in window && Notification.permission === 'granted') {
+                         new Notification(`Upcoming Block: ${block.label}`, {
+                             body: `Starting in ${diff} minutes at ${nextStart.format('HH:mm')}.`,
+                             icon: '/vite.svg'
+                         });
+                     }
+                     newNotifiedIds.add(key);
+                     hasUpdates = true;
                  }
-                 newNotifiedIds.add(key);
-                 hasUpdates = true;
              }
         }
       });

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../api/apiClient';
 
+import { TRANSLATIONS } from '../utils/translations';
+
 const Profile = () => {
   const [formData, setFormData] = useState({
     username: '',
@@ -14,6 +16,8 @@ const Profile = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
+  const [language] = useState(() => localStorage.getItem('language') || 'en');
+  const t = TRANSLATIONS.profile[language];
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -33,7 +37,7 @@ const Profile = () => {
           localStorage.removeItem('user');
           window.location.href = '/login';
         }
-        setError(err.response?.data?.message || 'Failed to load profile data.');
+        setError(err.response?.data?.message || t.errorLoad);
       } finally {
         setLoading(false);
       }
@@ -51,9 +55,9 @@ const Profile = () => {
     setSuccess('');
     try {
       await apiClient.put('/auth/profile', formData);
-      setSuccess('Profile updated successfully!');
+      setSuccess(t.successUpdate);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update profile.');
+      setError(err.response?.data?.message || t.errorUpdate);
     }
   };
 
@@ -61,12 +65,12 @@ const Profile = () => {
     <div className="flex justify-center items-center min-h-screen p-4">
       <div className="glass-panel p-8 rounded-xl w-full max-w-md">
         <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-white">Profile Settings</h2>
-            <button onClick={() => navigate('/dashboard')} className="text-sm text-gray-400 hover:text-white transition-colors">Back to Dashboard</button>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t.title}</h2>
+            <button onClick={() => navigate('/dashboard')} className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">{t.backBtn}</button>
         </div>
         
         {loading ? (
-          <p className="text-gray-400">Loading...</p>
+          <p className="text-gray-600 dark:text-gray-400">{t.loading}</p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && <div className="bg-red-500/20 border border-red-500 text-red-200 p-2 rounded text-sm">{error}</div>}
@@ -74,31 +78,31 @@ const Profile = () => {
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">First Name</label>
-                <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="input-field" placeholder="First Name" required />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">{t.firstName}</label>
+                <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="input-field" placeholder={t.firstNamePlaceholder} required />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">Last Name</label>
-                <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="input-field" placeholder="Last Name" required />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">{t.lastName}</label>
+                <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="input-field" placeholder={t.lastNamePlaceholder} required />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Username</label>
-              <input type="text" name="username" value={formData.username} onChange={handleChange} className="input-field" placeholder="Username" required />
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">{t.username}</label>
+              <input type="text" name="username" value={formData.username} onChange={handleChange} className="input-field" placeholder={t.usernamePlaceholder} required />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Email</label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} className="input-field" placeholder="Email Address" required />
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">{t.email}</label>
+              <input type="email" name="email" value={formData.email} onChange={handleChange} className="input-field" placeholder={t.emailPlaceholder} required />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">New Password</label>
-              <input type="password" name="password" value={formData.password} onChange={handleChange} className="input-field" placeholder="Leave blank to keep current password" />
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">{t.newPassword}</label>
+              <input type="password" name="password" value={formData.password} onChange={handleChange} className="input-field" placeholder={t.passwordPlaceholder} />
             </div>
 
-            <button type="submit" className="w-full btn-primary mt-4">Save Changes</button>
+            <button type="submit" className="w-full btn-primary mt-4">{t.saveBtn}</button>
           </form>
         )}
       </div>

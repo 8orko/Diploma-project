@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import apiClient from '../api/apiClient';
 
+import { TRANSLATIONS } from '../utils/translations';
+
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -9,6 +11,8 @@ const Login = () => {
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [language] = useState(() => localStorage.getItem('language') || 'en');
+  const t = TRANSLATIONS.login[language];
 
   const { email, password } = formData;
 
@@ -27,25 +31,25 @@ const Login = () => {
       navigate('/dashboard');
 
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred during login.');
+      setError(err.response?.data?.message || t.errorDefault);
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="w-full max-w-md bg-gray-800 rounded-lg shadow-md p-8">
-        <h2 className="text-3xl font-bold text-center text-white mb-6">Log In to Your Account</h2>
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md p-8 transition-colors duration-200">
+        <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-6">{t.title}</h2>
         <form onSubmit={onSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="sr-only">Email</label>
             <input
               id="email"
               type="email"
-              placeholder="Email Address"
+              placeholder={t.emailPlaceholder}
               name="email"
               value={email}
               onChange={onChange}
-              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input-field"
               required
             />
           </div>
@@ -54,26 +58,26 @@ const Login = () => {
             <input
               id="password"
               type="password"
-              placeholder="Password"
+              placeholder={t.passwordPlaceholder}
               name="password"
               value={password}
               onChange={onChange}
-              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input-field"
               required
             />
           </div>
           <button 
             type="submit"
-            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-md text-white font-semibold transition-colors"
+            className="w-full btn-primary"
           >
-            Login
+            {t.loginBtn}
           </button>
         </form>
-        {error && <p className="text-red-400 text-center mt-4">{error}</p>}
-        <p className="text-center text-gray-400 mt-4">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-blue-400 hover:underline">
-            Sign up here
+        {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+        <p className="text-center text-gray-600 dark:text-gray-400 mt-4">
+          {t.noAccount}{' '}
+          <Link to="/register" className="text-blue-600 dark:text-blue-400 hover:underline">
+            {t.signupLink}
           </Link>
         </p>
       </div>

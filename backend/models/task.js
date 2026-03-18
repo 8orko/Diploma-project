@@ -15,6 +15,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
+    dueDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+    },
+    dueTime: {
+      type: DataTypes.TIME,
+      allowNull: true,
+    },
   }, {});
   Task.associate = function(models) {
     Task.belongsTo(models.User, {

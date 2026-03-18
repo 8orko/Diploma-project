@@ -15,13 +15,15 @@ const getAllTasks = async (req, res) => {
 
 const createTask = async (req, res) => {
   try {
-    const { title, description, priority, category, timeBlockIds, reminderMinutes } = req.body;
+    const { title, description, priority, category, timeBlockIds, reminderMinutes, dueDate, dueTime } = req.body;
     const task = await Task.create({
       title,
       description,
       priority,
       category,
       reminderMinutes,
+      dueDate: dueDate || null,
+      dueTime: dueTime || null,
       userId: req.user.id,
     });
     if (timeBlockIds && timeBlockIds.length > 0) {
@@ -39,7 +41,7 @@ const createTask = async (req, res) => {
 const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { timeBlockIds, title, description, priority, category, reminderMinutes } = req.body;
+    const { timeBlockIds, title, description, priority, category, reminderMinutes, dueDate, dueTime } = req.body;
     const task = await Task.findOne({ where: { id, userId: req.user.id } });
 
     if (!task) {
@@ -54,6 +56,8 @@ const updateTask = async (req, res) => {
     if (priority !== undefined) updateData.priority = priority;
     if (category !== undefined) updateData.category = category;
     if (reminderMinutes !== undefined) updateData.reminderMinutes = reminderMinutes;
+    if (dueDate !== undefined) updateData.dueDate = dueDate || null;
+    if (dueTime !== undefined) updateData.dueTime = dueTime || null;
 
     await task.update(updateData);
 

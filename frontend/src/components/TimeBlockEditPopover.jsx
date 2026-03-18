@@ -1,17 +1,7 @@
 import React, { useState, useRef } from 'react';
 import useClickOutside from '../hooks/useClickOutside';
 
-const daysOfWeek = [
-  { label: 'Sunday', value: 0 },
-  { label: 'Monday', value: 1 },
-  { label: 'Tuesday', value: 2 },
-  { label: 'Wednesday', value: 3 },
-  { label: 'Thursday', value: 4 },
-  { label: 'Friday', value: 5 },
-  { label: 'Saturday', value: 6 },
-];
-
-const TimeBlockEditPopover = ({ show, block, tasks, onClose, onSave, onDelete }) => {
+const TimeBlockEditPopover = ({ show, block, tasks, onClose, onSave, onDelete, t }) => {
   const [formData, setFormData] = useState(() => ({
     ...block,
     reminderMinutes: block.reminderMinutes || 0,
@@ -19,6 +9,16 @@ const TimeBlockEditPopover = ({ show, block, tasks, onClose, onSave, onDelete })
   const popoverRef = useRef(null);
 
   useClickOutside({ ref: popoverRef, callback: onClose });
+
+  const daysOfWeekList = [
+    { label: t.sunday, value: 0 },
+    { label: t.monday, value: 1 },
+    { label: t.tuesday, value: 2 },
+    { label: t.wednesday, value: 3 },
+    { label: t.thursday, value: 4 },
+    { label: t.friday, value: 5 },
+    { label: t.saturday, value: 6 },
+  ];
 
   const handleTimeChange = (e) => {
     const { name, value } = e.target;
@@ -44,12 +44,12 @@ const TimeBlockEditPopover = ({ show, block, tasks, onClose, onSave, onDelete })
         className="bg-gray-800 border border-gray-600 rounded-xl shadow-2xl p-6 w-96 scale-in"
       >
       <h3 className="text-lg font-bold mb-4 text-white">
-        {block.isPreview ? 'Create New Block' : 'Edit Time Block'}
+        {block.isPreview ? t.createTimeBlock : t.editTimeBlock}
       </h3>
       <form onSubmit={handleSave} className="space-y-4">
         <input
           type="text"
-          placeholder="Block Label"
+          placeholder={t.blockLabel}
           className="input-field"
           value={formData.label || ''}
           onChange={e => setFormData({...formData, label: e.target.value})}
@@ -75,7 +75,7 @@ const TimeBlockEditPopover = ({ show, block, tasks, onClose, onSave, onDelete })
             }}
             className="h-4 w-4 rounded bg-gray-600 border-gray-500 text-blue-500 focus:ring-blue-600"
           />
-          <label htmlFor="isAllDay" className="ml-2 text-sm text-gray-300">All Day Event</label>
+          <label htmlFor="isAllDay" className="ml-2 text-sm text-gray-300">{t.allDayEvent}</label>
         </div>
 
         <div className="flex gap-2">
@@ -84,10 +84,10 @@ const TimeBlockEditPopover = ({ show, block, tasks, onClose, onSave, onDelete })
             value={formData.type}
             onChange={e => setFormData({...formData, type: e.target.value})}
           >
-            <option value="daily">Daily (Mon-Sun)</option>
-            <option value="workweek">Work Week (Mon-Fri)</option>
-            <option value="weekly">Weekly (Specific Day)</option>
-            <option value="single">Single Day</option>
+            <option value="daily">{t.daily}</option>
+            <option value="workweek">{t.workWeek}</option>
+            <option value="weekly">{t.weekly}</option>
+            <option value="single">{t.single}</option>
           </select>
           {formData.type === 'weekly' && (
             <select
@@ -95,7 +95,7 @@ const TimeBlockEditPopover = ({ show, block, tasks, onClose, onSave, onDelete })
               value={formData.dayOfWeek}
               onChange={e => setFormData({...formData, dayOfWeek: parseInt(e.target.value, 10)})}
             >
-              {daysOfWeek.map(day => (
+              {daysOfWeekList.map(day => (
                 <option key={day.value} value={day.value}>{day.label}</option>
               ))}
             </select>
@@ -114,7 +114,7 @@ const TimeBlockEditPopover = ({ show, block, tasks, onClose, onSave, onDelete })
         {!formData.isAllDay && (
           <div className="flex gap-2 items-center">
             <div className="flex-1">
-              <label className="text-xs text-gray-400 mb-1 block">Start Time</label>
+              <label className="text-xs text-gray-400 mb-1 block">{t.startTime}</label>
               <input
                 type="time"
                 name="start"
@@ -125,7 +125,7 @@ const TimeBlockEditPopover = ({ show, block, tasks, onClose, onSave, onDelete })
               />
             </div>
             <div className="flex-1">
-              <label className="text-xs text-gray-400 mb-1 block">End Time</label>
+              <label className="text-xs text-gray-400 mb-1 block">{t.endTime}</label>
               <input
                 type="time"
                 name="end"
@@ -139,26 +139,26 @@ const TimeBlockEditPopover = ({ show, block, tasks, onClose, onSave, onDelete })
         )}
 
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Reminder</label>
+          <label className="text-xs text-gray-400 mb-1 block">{t.reminder}</label>
           <select
             className="input-field"
             value={formData.reminderMinutes || 0}
             onChange={e => setFormData({...formData, reminderMinutes: parseInt(e.target.value)})}
           >
-            <option value="0">No Reminder</option>
-            <option value="5">5 minutes before</option>
-            <option value="10">10 minutes before</option>
-            <option value="15">15 minutes before</option>
-            <option value="30">30 minutes before</option>
-            <option value="60">1 hour before</option>
-            <option value="1440">1 day before</option>
-            <option value="10080">1 week before</option>
+            <option value="0">{t.noReminder}</option>
+            <option value="5">5 {t.minBefore}</option>
+            <option value="10">10 {t.minBefore}</option>
+            <option value="15">15 {t.minBefore}</option>
+            <option value="30">30 {t.minBefore}</option>
+            <option value="60">{t.hourBefore}</option>
+            <option value="1440">{t.dayBefore}</option>
+            <option value="10080">{t.weekBefore}</option>
           </select>
         </div>
 
         {tasks && tasks.length > 0 && (
           <div className="pt-2">
-            <h4 className="text-sm font-semibold text-gray-300 mb-1">Associated Tasks:</h4>
+            <h4 className="text-sm font-semibold text-gray-300 mb-1">{t.attachedTasks}:</h4>
             <ul className="text-xs text-gray-400 list-disc list-inside">
               {tasks.map(t => <li key={t.id}>{t.title}</li>)}
             </ul>
@@ -166,18 +166,18 @@ const TimeBlockEditPopover = ({ show, block, tasks, onClose, onSave, onDelete })
         )}
 
         <div className="flex gap-3 mt-6">
-          <button type="submit" className="flex-1 btn-primary">Save</button>
-          <button type="button" onClick={onClose} className="flex-1 btn-secondary">Cancel</button>
+          <button type="submit" className="flex-1 btn-primary">{t.save}</button>
+          <button type="button" onClick={onClose} className="flex-1 btn-secondary">{t.cancel}</button>
         </div>
         
         {!block.isPreview && (
           <div className="pt-4 border-t border-gray-700 text-center">
             {block.type !== 'single' && (
-              <p className="text-xs text-gray-500 mb-2">Delete this occurrence or the whole series?</p>
+              <p className="text-xs text-gray-500 mb-2">{t.deleteQuestion}</p>
             )}
             <div className="flex gap-2">
-              <button type="button" onClick={() => onDelete(block.id, block.eventDate, block.type === 'single' ? 'series' : 'single')} className="flex-1 text-xs bg-red-900/50 text-red-300 hover:bg-red-800/50 rounded-md py-1">Delete {block.type === 'single' ? 'Block' : 'This One'}</button>
-              {block.type !== 'single' && (<button type="button" onClick={() => onDelete(block.id, null, 'series')} className="flex-1 text-xs bg-red-700 text-white hover:bg-red-600 rounded-md py-1">Delete Series</button>)}
+              <button type="button" onClick={() => onDelete(block.id, block.eventDate, block.type === 'single' ? 'series' : 'single')} className="flex-1 text-xs bg-red-900/50 text-red-300 hover:bg-red-800/50 rounded-md py-1">{block.type === 'single' ? t.deleteBlock : t.deleteInstance}</button>
+              {block.type !== 'single' && (<button type="button" onClick={() => onDelete(block.id, null, 'series')} className="flex-1 text-xs bg-red-700 text-white hover:bg-red-600 rounded-md py-1">{t.deleteSeries}</button>)}
             </div>
           </div>
         )}

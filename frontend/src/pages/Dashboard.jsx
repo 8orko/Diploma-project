@@ -9,20 +9,12 @@ import 'moment/locale/bg';
 import TimeBlockEditPopover from '../components/TimeBlockEditPopover';
 import useReminders from '../hooks/useReminders';
 import useNotification from '../hooks/useNotification';
-import {
-  BLOCK_TYPES,
-  TASK_CATEGORIES,
-  TASK_PRIORITIES,
-  FILTER_OPTIONS,
-  SORT_OPTIONS,
-  SEARCH_TARGETS,
-  DAYS_OF_WEEK,
-} from '../constants';
+import { BLOCK_TYPES, TASK_CATEGORIES, TASK_PRIORITIES, FILTER_OPTIONS, SORT_OPTIONS, SEARCH_TARGETS } from '../constants';
 import Notification from '../components/Notification';
 
 const localizer = momentLocalizer(moment);
 
-const initialTaskState = { title: '', description: '', priority: TASK_PRIORITIES.MEDIUM, category: TASK_CATEGORIES.GENERAL, timeBlockIds: [], reminderMinutes: 0 };
+const initialTaskState = { title: '', description: '', priority: TASK_PRIORITIES.MEDIUM, category: TASK_CATEGORIES.GENERAL, timeBlockIds: [], reminderMinutes: 0, dueDate: '', dueTime: '' };
 const initialBlockState = { label: '', type: BLOCK_TYPES.DAILY, startHour: 9, startMinute: 0, endHour: 17, endMinute: 0, dayOfWeek: 1, date: '', isAllDay: false, reminderMinutes: 0 };
 
 const getColor = (str) => {
@@ -41,134 +33,13 @@ const getColor = (str) => {
 
 const DnDCalendar = withDragAndDrop(Calendar);
 
-const TRANSLATIONS = {
-  en: {
-    dashboard: 'My Dashboard',
-    tasks: 'Tasks',
-    schedule: 'Schedule',
-    upcoming: 'Upcoming',
-    now: 'Now',
-    editTask: 'Edit Task',
-    addNewTask: 'Add New Task',
-    taskTitle: 'Task Title',
-    description: 'Description',
-    lowPriority: 'Low Priority',
-    mediumPriority: 'Medium Priority',
-    highPriority: 'High Priority',
-    general: 'General',
-    work: 'Work',
-    personal: 'Personal',
-    university: 'University',
-    attachToBlocks: '-- Attach to Time Blocks (Ctrl+Click) --',
-    noReminder: 'No Reminder',
-    minBefore: 'minutes before',
-    hourBefore: '1 hour before',
-    dayBefore: '1 day before',
-    weekBefore: '1 week before',
-    addTask: 'Add Task',
-    updateTask: 'Update Task',
-    cancel: 'Cancel',
-    yourTasks: 'Your Tasks',
-    searchTasks: 'Search tasks...',
-    searchBlocks: 'Search blocks...',
-    allCategories: 'All Categories',
-    allPriorities: 'All Priorities',
-    sortNewest: 'Sort by: Newest',
-    sortOldest: 'Sort by: Oldest',
-    sortPriority: 'Sort by: Priority',
-    noTasksFound: 'No tasks found.',
-    edit: 'Edit',
-    del: 'Del',
-    editTimeBlock: 'Edit Time Block',
-    createTimeBlock: 'Create Time Block',
-    blockLabel: 'Block Label (e.g., Deep Work)',
-    daily: 'Daily (Mon-Sun)',
-    workWeek: 'Work Week (Mon-Fri)',
-    weekly: 'Weekly (Specific Day)',
-    single: 'Single Day',
-    startTime: 'Start Time',
-    endTime: 'End Time',
-    addBlock: 'Add Block',
-    updateBlock: 'Update Block',
-    existingBlocks: 'Existing Blocks',
-    monFri: 'Mon-Fri',
-    today: 'Today',
-    back: 'Back',
-    next: 'Next',
-    month: 'Month',
-    week: 'Week',
-    day: 'Day',
-    agenda: 'Agenda',
-    searchTargetTask: 'Tasks',
-    searchTargetBlock: 'Blocks'
-  },
-  bg: {
-    dashboard: 'Моето Табло',
-    tasks: 'Задачи',
-    schedule: 'График',
-    upcoming: 'Предстоящи',
-    now: 'Сега',
-    editTask: 'Редактиране на задача',
-    addNewTask: 'Нова задача',
-    taskTitle: 'Заглавие',
-    description: 'Описание',
-    lowPriority: 'Нисък Приоритет',
-    mediumPriority: 'Среден Приоритет',
-    highPriority: 'Висок Приоритет',
-    general: 'Общи',
-    work: 'Работа',
-    personal: 'Лични',
-    university: 'Университет',
-    attachToBlocks: '-- Прикрепи към блокове (Ctrl+Click) --',
-    noReminder: 'Без напомняне',
-    minBefore: 'минути преди',
-    hourBefore: '1 час преди',
-    dayBefore: '1 ден преди',
-    weekBefore: '1 седмица преди',
-    addTask: 'Добави',
-    updateTask: 'Обнови',
-    cancel: 'Отказ',
-    yourTasks: 'Твоите Задачи',
-    searchTasks: 'Търси задачи...',
-    searchBlocks: 'Търси блокове...',
-    allCategories: 'Всички Категории',
-    allPriorities: 'Всички Приоритети',
-    sortNewest: 'Сортирай: Най-нови',
-    sortOldest: 'Сортирай: Най-стари',
-    sortPriority: 'Сортирай: Приоритет',
-    noTasksFound: 'Няма намерени задачи.',
-    edit: 'Ред.',
-    del: 'Изтр.',
-    editTimeBlock: 'Редакция на блок',
-    createTimeBlock: 'Нов времеви блок',
-    blockLabel: 'Етикет (напр. Работа)',
-    daily: 'Ежедневно (Пон-Нед)',
-    workWeek: 'Работна седм. (Пон-Пет)',
-    weekly: 'Седмично (Ден)',
-    single: 'Еднократно',
-    startTime: 'Начало',
-    endTime: 'Край',
-    addBlock: 'Добави',
-    updateBlock: 'Обнови',
-    existingBlocks: 'Съществуващи Блокове',
-    monFri: 'Пон-Пет',
-    today: 'Днес',
-    back: 'Назад',
-    next: 'Напред',
-    month: 'Месец',
-    week: 'Седмица',
-    day: 'Ден',
-    agenda: 'График',
-    searchTargetTask: 'Задачи',
-    searchTargetBlock: 'Блокове'
-  }
-};
+import { TRANSLATIONS } from '../utils/translations';
 
 const Dashboard = () => {
   // Calendar State
   const [view, setView] = useState('week');
   const [date, setDate] = useState(new Date());
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState(() => localStorage.getItem('language') || 'en');
 
   // Data State
   const [tasks, setTasks] = useState([]);
@@ -209,52 +80,56 @@ const Dashboard = () => {
         const taskReminderMinutes = task.reminderMinutes || 0;
         if (taskReminderMinutes <= 0) return;
 
-        // Filter for blocks that this task is attached to
-        // Note: The backend returns TimeBlocks in task.TimeBlocks, but we also maintain timeBlockIds locally in some states.
-        // We should rely on task.TimeBlocks which comes from the include in the backend.
-        // However, the backend include might only have IDs if we didn't update it yet. 
-        // The previous backend update ensured full objects.
+        let starts = [];
+
+        // 1. If task has a native dueDate and dueTime
+        if (task.dueDate && task.dueTime) {
+          if (task.dueDate === now.format('YYYY-MM-DD')) {
+             const [h, m] = task.dueTime.split(':');
+             starts.push({ time: moment().hour(h).minute(m).second(0), label: 'Scheduled Time', id: 'native' });
+          }
+        }
+
+        // 2. If task is attached to active blocks
         const attachedBlockIds = task.TimeBlocks ? task.TimeBlocks.map(tb => tb.id) : [];
-        
-        // If the task is not attached to any block, we can't remind based on block start time (unless we add specific task due dates later)
-        if (attachedBlockIds.length === 0) return;
-
-        // Find the actual block objects from our main timeBlocks state to get the latest schedule info
-        const attachedBlocks = timeBlocks.filter(tb => attachedBlockIds.includes(tb.id));
-
-        attachedBlocks.forEach(block => {
-          let isToday = false;
-          // Logic to determine if block is today based on type
-          if (block.type === 'daily') isToday = true;
-          else if (block.type === 'workweek' && now.day() >= 1 && now.day() <= 5) isToday = true;
-          else if (block.type === 'weekly' && block.dayOfWeek === now.day()) isToday = true;
-          else if (block.type === 'single' && block.date === now.format('YYYY-MM-DD')) isToday = true;
-          
-          if (block.excludedDates?.includes(now.format('YYYY-MM-DD'))) isToday = false;
-
-          if (isToday) {
-            const start = moment().hour(block.startHour).minute(block.startMinute || 0).second(0);
+        if (attachedBlockIds.length > 0) {
+          const attachedBlocks = timeBlocks.filter(tb => attachedBlockIds.includes(tb.id));
+          attachedBlocks.forEach(block => {
+            let isToday = false;
+            if (block.type === 'daily') isToday = true;
+            else if (block.type === 'workweek' && now.day() >= 1 && now.day() <= 5) isToday = true;
+            else if (block.type === 'weekly' && block.dayOfWeek === now.day()) isToday = true;
+            else if (block.type === 'single' && block.date === now.format('YYYY-MM-DD')) isToday = true;
             
-            // Calculate when the notification should fire: Block Start Time - Task Reminder Minutes
-            const reminderTime = start.clone().subtract(taskReminderMinutes, 'minutes');
-            
-            // Trigger if we have passed the reminder time, but are not yet too far past (e.g. within 2 minutes)
-            // This makes it more robust than a 1-minute window in case of timer lags
-            // Also ensures we don't notify if we are already past the start time of the block (unless reminder was set for after start, which is rare)
-            if (now.isSameOrAfter(reminderTime) && now.isBefore(reminderTime.clone().add(2, 'minutes')) && now.isBefore(start)) {
-               const notifId = `task-rem-${task.id}-${block.id}-${now.format('YYYY-MM-DD')}`;
-               
-               if (!notifiedIds.has(notifId)) {
-                 updates.add(notifId);
-                 const msg = language === 'en' ? `Reminder: ${task.title}` : `Напомняне: ${task.title}`;
-                 const body = `${language === 'en' ? 'Starts in' : 'Започва след'} ${taskReminderMinutes}m (Block: ${block.label})`;
-                 addNotification(`${msg} (${body})`, 'info');
-                 
-                 if (Notification.permission === 'granted') {
-                   new Notification(msg, { body });
-                 }
-               }
+            if (block.excludedDates?.includes(now.format('YYYY-MM-DD'))) isToday = false;
+
+            if (isToday) {
+              starts.push({
+                time: moment().hour(block.startHour).minute(block.startMinute || 0).second(0),
+                label: `Block: ${block.label}`,
+                id: block.id
+              });
             }
+          });
+        }
+
+        starts.forEach(startObj => {
+          const start = startObj.time;
+          const reminderTime = start.clone().subtract(taskReminderMinutes, 'minutes');
+          
+          if (now.isSameOrAfter(reminderTime) && now.isBefore(reminderTime.clone().add(2, 'minutes')) && now.isBefore(start)) {
+             const notifId = `task-rem-${task.id}-${startObj.id}-${now.format('YYYY-MM-DD')}`;
+             
+             if (!notifiedIds.has(notifId)) {
+               updates.add(notifId);
+               const msg = language === 'en' ? `Reminder: ${task.title}` : `Напомняне: ${task.title}`;
+               const body = `${language === 'en' ? 'Starts in' : 'Започва след'} ${taskReminderMinutes}m (${startObj.label})`;
+               addNotification(`${msg} - ${body}`, 'info');
+               
+               if (Notification.permission === 'granted') {
+                 new Notification(msg, { body });
+               }
+             }
           }
         });
       });
@@ -282,7 +157,17 @@ const Dashboard = () => {
     moment.locale(language);
   }, [language]);
 
-  const t = TRANSLATIONS[language];
+  const t = TRANSLATIONS.dashboard[language];
+
+  const daysOfWeek = [
+    { label: t.monday, value: 1 },
+    { label: t.tuesday, value: 2 },
+    { label: t.wednesday, value: 3 },
+    { label: t.thursday, value: 4 },
+    { label: t.friday, value: 5 },
+    { label: t.saturday, value: 6 },
+    { label: t.sunday, value: 0 },
+  ];
 
   const getDaysArray = (block) => {
     if (block.type === 'daily') return [0, 1, 2, 3, 4, 5, 6];
@@ -312,7 +197,7 @@ const Dashboard = () => {
         setTasks(tasksRes.data);
         setTimeBlocks(blocksRes.data);
       } catch (error) {
-        addNotification(language === 'en' ? 'Error fetching data' : 'Грешка при зареждане на данните', 'error');
+        addNotification(t.errorFetchingData, 'error');
       }
     };
     fetchData();
@@ -378,7 +263,7 @@ const Dashboard = () => {
 
        generatedEvents.push({
          id: 'preview-block',
-         title: '(New Block)',
+         title: t.newBlock,
          start,
          end,
          resource: { ...newBlock, id: 'preview' },
@@ -453,7 +338,7 @@ const Dashboard = () => {
     try {
       const res = await apiClient.post('/timeblocks', blockData);
       setTimeBlocks(prev => [...prev, res.data]);
-      addNotification(language === 'en' ? 'Time block created successfully' : 'Времевият блок е създаден успешно', 'success');
+      addNotification(t.blockCreated, 'success');
     } catch (error) {
       addNotification(error.response?.data?.message || 'Failed to create time block. Please try again.', 'error');
     }
@@ -463,7 +348,7 @@ const Dashboard = () => {
     const startTotal = blockData.startHour * 60 + blockData.startMinute;
     const endTotal = blockData.endHour * 60 + blockData.endMinute;
     if (startTotal >= endTotal) {
-      addNotification(language === 'en' ? 'Start time must be earlier than end time.' : 'Началният час трябва да е преди крайния.', 'error');
+      addNotification(t.startTimeError, 'error');
       return;
     }
 
@@ -472,7 +357,7 @@ const Dashboard = () => {
 
     const conflict = findOverlap(blockData, blockId);
     if (conflict) {
-      addNotification(`${language === 'en' ? 'Overlaps with' : 'Припокрива се с'} "${conflict.label}" (${String(conflict.startHour).padStart(2,'0')}:${String(conflict.startMinute||0).padStart(2,'0')}).`, 'error');
+      addNotification(`${t.overlapError} "${conflict.label}" (${String(conflict.startHour).padStart(2,'0')}:${String(conflict.startMinute||0).padStart(2,'0')}).`, 'error');
       return;
     }
 
@@ -483,32 +368,35 @@ const Dashboard = () => {
       if (blockId) {
         const res = await apiClient.put(`/timeblocks/${blockId}`, dataToSave);
         setTimeBlocks(prev => prev.map(b => b.id === blockId ? res.data : b));
-        addNotification(language === 'en' ? 'Time block updated successfully' : 'Времевият блок е обновен успешно', 'success');
+        addNotification(t.blockUpdated, 'success');
       } else {
         await addBlock(dataToSave);
       }
       resetBlockForm();
     } catch (error) {
-      addNotification(error.response?.data?.message || 'Failed to save time block. Please try again.', 'error');
+      addNotification(error.response?.data?.message || t.failedToSaveBlock, 'error');
     }
   };
 
   // Task Handlers
   const handleSaveTask = async (e) => {
     e.preventDefault();
+    if (newTask.reminderMinutes > 0 && 'Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
     try {
       if (editingTask) {
         const res = await apiClient.put(`/tasks/${editingTask.id}`, newTask);
         setTasks(tasks.map(t => (t.id === editingTask.id ? res.data : t)));
-        addNotification(language === 'en' ? 'Task updated successfully' : 'Задачата е обновена успешно', 'success');
+        addNotification(t.taskUpdated, 'success');
       } else {
         const res = await apiClient.post('/tasks', newTask);
         setTasks([...tasks, res.data]);
-        addNotification(language === 'en' ? 'Task created successfully' : 'Задачата е създадена успешно', 'success');
+        addNotification(t.taskCreated, 'success');
       }
       resetTaskForm();
     } catch (error) {
-      addNotification(language === 'en' ? 'Error saving task' : 'Грешка при запазване на задачата', 'error');
+      addNotification(t.errorSavingTask, 'error');
     }
   };
 
@@ -516,9 +404,9 @@ const Dashboard = () => {
     try {
       await apiClient.delete(`/tasks/${id}`);
       setTasks(tasks.filter(t => t.id !== id));
-      addNotification(language === 'en' ? 'Task deleted successfully' : 'Задачата е изтрита успешно', 'success');
+      addNotification(t.taskDeleted, 'success');
     } catch (error) {
-      addNotification(language === 'en' ? 'Error deleting task' : 'Грешка при изтриване на задачата', 'error');
+      addNotification(t.errorDeletingTask, 'error');
     }
   };
 
@@ -549,9 +437,9 @@ const Dashboard = () => {
         // exclusion date is returned. We update our local state to match.
         setTimeBlocks(prev => prev.map(b => b.id === id ? res.data : b));
       }
-      addNotification(language === 'en' ? 'Time block deleted successfully' : 'Времевият блок е изтрит успешно', 'success');
+      addNotification(t.blockDeleted, 'success');
     } catch (error) {
-      addNotification(error.response?.data?.message || 'Failed to delete time block.', 'error');
+      addNotification(error.response?.data?.message || t.failedToDeleteBlock, 'error');
     }
   };
 
@@ -562,6 +450,11 @@ const Dashboard = () => {
 
   const handleSaveBlockFromForm = async (e) => {
     e.preventDefault();
+
+    if (newBlock.reminderMinutes > 0 && 'Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+
     await handleSaveBlock(newBlock);
   };
 
@@ -602,7 +495,7 @@ const Dashboard = () => {
       // On success, update our state with the authoritative response from the server
       setTasks(originalTasks.map(t => t.id === taskId ? res.data : t));
     } catch (error) {
-      addNotification(language === 'en' ? 'Error assigning task to time block' : 'Грешка при назначаване на задача към блок', 'error');
+      addNotification(t.errorAssigningTask, 'error');
       setTasks(originalTasks); // Revert on error
     }
   };
@@ -817,46 +710,35 @@ const Dashboard = () => {
       <div style={{ position: 'fixed', zIndex: 2147483647 }}>
         <Notification message={notification?.message} type={notification?.type} />
       </div>
-      <style>{`
-        .rbc-time-view .rbc-allday-cell {
-          display: none !important;
-        }
-        .rbc-addons-dnd-drag-preview {
-          opacity: 1 !important;
-          z-index: 1000;
-          transform: translateZ(0); /* Force hardware acceleration for smoother dragging */
-          pointer-events: none;
-        }
-        .rbc-addons-dnd-dragged-event {
-          opacity: 0 !important;
-        }
-      `}</style>
+
       <div className="flex flex-col lg:flex-row h-[calc(100vh-6rem)] gap-6">
       {/* Left Sidebar: Management */}
       <div className="w-full lg:w-1/3 flex flex-col gap-4 h-full">
         
         {/* Header & Profile */}
-        <div className="flex justify-between items-center px-1">
-          <h1 className="text-2xl font-bold text-white tracking-tight">{t.dashboard}</h1>
-          <button 
-            onClick={() => setLanguage(language === 'en' ? 'bg' : 'en')}
-            className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded transition-colors"
-          >
-            {language === 'en' ? 'BG' : 'EN'}
-          </button>
+        <div className="flex justify-between items-center px-1 mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">{t.dashboard}</h1>
+          {'Notification' in window && Notification.permission === 'default' && (
+            <button 
+              onClick={() => Notification.requestPermission()}
+              className="text-xs bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-200 px-3 py-1.5 rounded-full font-semibold hover:bg-indigo-200 transition-colors"
+            >
+              🔔 Enable Notifications
+            </button>
+          )}
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex p-1 bg-gray-800/50 rounded-xl border border-gray-700 shrink-0">
+        <div className="flex p-1 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 shrink-0 shadow-sm transition-colors duration-200">
           <button 
             onClick={() => setActiveTab('tasks')}
-            className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${activeTab === 'tasks' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-gray-700/50'}`}
+            className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${activeTab === 'tasks' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50'}`}
           >
             {t.tasks}
           </button>
           <button 
             onClick={() => setActiveTab('blocks')}
-            className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${activeTab === 'blocks' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-gray-700/50'}`}
+            className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${activeTab === 'blocks' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50'}`}
           >
             {t.schedule}
           </button>
@@ -865,30 +747,30 @@ const Dashboard = () => {
         {/* Reminders Toggle & List */}
         <div className="space-y-2">
           {activeReminders.length > 0 && (
-            <div className="bg-indigo-900/20 border border-indigo-500/30 rounded-xl p-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300 transform-gpu">
-              <div className="flex items-center justify-between text-indigo-200 text-xs font-bold uppercase tracking-wider">
+            <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-500/30 rounded-xl p-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300 transform-gpu">
+              <div className="flex items-center justify-between text-indigo-800 dark:text-indigo-200 text-xs font-bold uppercase tracking-wider">
                 <span>{t.upcoming}</span>
-                <span className="bg-indigo-500/20 px-1.5 py-0.5 rounded text-[10px]">{activeReminders.length}</span>
+                <span className="bg-indigo-200 dark:bg-indigo-500/20 text-indigo-900 dark:text-indigo-100 px-1.5 py-0.5 rounded text-[10px]">{activeReminders.length}</span>
               </div>
               <div className="space-y-2">
                 {activeReminders.map(reminder => (
-                  <div key={reminder.id} className="bg-gray-800/50 p-2.5 rounded-lg border border-indigo-500/20">
+                  <div key={reminder.id} className="bg-white dark:bg-gray-800/50 p-2.5 rounded-lg border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
                     <div className="flex justify-between items-start">
-                      <span className="font-semibold text-white text-sm">{reminder.label}</span>
-                      <span className="text-indigo-300 text-xs font-mono bg-indigo-900/40 px-1.5 py-0.5 rounded">
+                      <span className="font-semibold text-gray-900 dark:text-white text-sm">{reminder.label}</span>
+                      <span className="text-indigo-700 dark:text-indigo-300 text-xs font-mono bg-indigo-100 dark:bg-indigo-900/40 px-1.5 py-0.5 rounded">
                         {reminder.minutes === 0 ? t.now : `${reminder.minutes}m`}
                       </span>
                     </div>
-                    <div className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-1">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                       </svg>
                       {reminder.time} {moment(reminder.date).isSame(moment(), 'day') ? '' : `(${moment(reminder.date).format('MMM D')})`}
                     </div>
                     {reminder.tasks && (
-                      <div className="mt-2 pt-2 border-t border-gray-700/50">
-                        <div className="text-[10px] text-gray-500 uppercase mb-0.5">Tasks</div>
-                        <div className="text-xs text-gray-300 line-clamp-2">{reminder.tasks}</div>
+                      <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700/50">
+                        <div className="text-[10px] text-gray-500 dark:text-gray-400 uppercase mb-0.5">Tasks</div>
+                        <div className="text-xs text-gray-700 dark:text-gray-300 line-clamp-2">{reminder.tasks}</div>
                       </div>
                     )}
                   </div>
@@ -903,7 +785,7 @@ const Dashboard = () => {
             <>
               {/* Task Management */}
               <div ref={taskFormRef} className="glass-panel p-6 rounded-xl">
-                <h3 className="text-lg font-bold mb-4 text-white flex items-center gap-2">
+                <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
                   {editingTask ? t.editTask : t.addNewTask}
                 </h3>
                 <form onSubmit={handleSaveTask} className="space-y-4">
@@ -941,6 +823,20 @@ const Dashboard = () => {
                       <option value={TASK_CATEGORIES.PERSONAL}>{t.personal}</option>
                       <option value={TASK_CATEGORIES.UNIVERSITY}>{t.university}</option>
                     </select>
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="date"
+                      className="input-field"
+                      value={newTask.dueDate || ''}
+                      onChange={e => setNewTask({...newTask, dueDate: e.target.value})}
+                    />
+                    <input
+                      type="time"
+                      className="input-field"
+                      value={newTask.dueTime || ''}
+                      onChange={e => setNewTask({...newTask, dueTime: e.target.value})}
+                    />
                   </div>
                   <select
                     multiple
@@ -984,7 +880,7 @@ const Dashboard = () => {
                             handleDeleteTask(editingTask.id);
                             resetTaskForm();
                           }}
-                          className="px-4 py-2 bg-red-900/50 text-red-200 hover:bg-red-900/70 rounded-lg transition-colors text-sm font-semibold"
+                          className="px-4 py-2 bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200 hover:bg-red-200 dark:hover:bg-red-900/70 rounded-lg transition-colors text-sm font-semibold"
                         >
                           {t.del}
                         </button>
@@ -1003,10 +899,10 @@ const Dashboard = () => {
 
               {/* Task List */}
               <div className="glass-panel p-6 rounded-xl flex flex-col gap-4">
-                <h3 className="text-lg font-bold text-white">{t.yourTasks}</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t.yourTasks}</h3>
                 
                 {/* Search & Filter Controls */}
-                <div className="space-y-3 bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
+                <div className="space-y-3 bg-gray-50 dark:bg-gray-900/50 p-3 rounded-lg border border-gray-200 dark:border-gray-700/50">
                   <div className="flex gap-2">
                     <select
                       className="input-field w-1/3 text-xs"
@@ -1059,27 +955,26 @@ const Dashboard = () => {
                 </div>
 
                 <div className="space-y-3">
-                  {filteredTasks.length === 0 && <p className="text-gray-400 text-center py-4">{t.noTasksFound}</p>}
+                  {filteredTasks.length === 0 && <p className="text-gray-600 dark:text-gray-400 text-center py-4">{t.noTasksFound}</p>}
                   {filteredTasks.map(task => (
                     <div 
                       key={task.id} 
                       draggable
                       onDragStart={(e) => handleDragStart(e, task.id)}
                       onClick={() => handleEditTask(task)}
-                      className="group bg-gray-700/50 p-3 rounded-lg card-hover cursor-pointer flex justify-between items-start"
+                      className="group bg-white dark:bg-gray-700/50 p-3 rounded-lg card-hover cursor-pointer flex justify-between items-start"
                     >
                       <div>
-                        <h4 className="font-bold text-white text-sm">{task.title}</h4>
-                        <p className="text-xs text-gray-300 mt-1 line-clamp-2">{task.description}</p>
+                        <h4 className="font-bold text-gray-900 dark:text-white text-sm">{task.title}</h4>
+                        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">{task.description}</p>
                         <div className="flex flex-wrap gap-2 mt-2 text-[10px]">
                           <span className={`px-2 py-0.5 rounded-full font-medium ${
-                            task.priority === 'High' ? 'bg-red-900/80 text-red-200' : 
-                            task.priority === 'Medium' ? 'bg-yellow-900/80 text-yellow-200' : 
-                            'bg-green-900/80 text-green-200'
-                          }`}>
-                            {task.priority}
+                            task.priority === 'High' ? 'bg-red-100 dark:bg-red-900/80 text-red-800 dark:text-red-200' : 
+                            task.priority === 'Medium' ? 'bg-yellow-100 dark:bg-yellow-900/80 text-yellow-800 dark:text-yellow-200' : 
+                            'bg-green-100 dark:bg-green-900/80 text-green-800 dark:text-green-200'
+                          }`}>{t[task.priority.toLowerCase()]}
                           </span>
-                          <span className="bg-blue-900/80 text-blue-200 px-2 py-0.5 rounded-full">{task.category}</span>
+                          <span className="bg-blue-100 dark:bg-blue-900/80 text-blue-800 dark:text-blue-200 px-2 py-0.5 rounded-full">{t[task.category.toLowerCase()]}</span>
                           {task.TimeBlocks && task.TimeBlocks.map(tb => (
                             <span key={tb.id} className="text-white px-2 py-0.5 rounded-full ml-1 shadow-sm" style={{ backgroundColor: getColor(tb.id) }}>
                               {tb.label}
@@ -1100,7 +995,7 @@ const Dashboard = () => {
             <>
               {/* Time Block Management */}
               <div className="glass-panel p-6 rounded-xl">
-                <h3 className="text-lg font-bold mb-4 text-white">
+                <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">
                   {editingBlock ? t.editTimeBlock : t.createTimeBlock}
                 </h3>
                 <form onSubmit={handleSaveBlockFromForm} className="space-y-4">
@@ -1129,7 +1024,7 @@ const Dashboard = () => {
                         value={newBlock.dayOfWeek}
                         onChange={e => setNewBlock({...newBlock, dayOfWeek: parseInt(e.target.value, 10)})}
                       >
-                        {DAYS_OF_WEEK.map(day => (
+                        {daysOfWeek.map(day => (
                           <option key={day.value} value={day.value}>{day.label}</option>
                         ))}
                       </select>
@@ -1146,7 +1041,7 @@ const Dashboard = () => {
                   </div>
                   <div className="flex gap-2 items-center">
                     <div className="flex-1">
-                      <label htmlFor="start-hour" className="text-xs text-gray-400 mb-1 block">{t.startTime}</label>
+                      <label htmlFor="start-hour" className="text-xs text-gray-600 dark:text-gray-400 mb-1 block">{t.startTime}</label>
                       <input
                         type="time"
                         id="start-hour"
@@ -1160,7 +1055,7 @@ const Dashboard = () => {
                       />
                     </div>
                     <div className="flex-1">
-                      <label htmlFor="end-hour" className="text-xs text-gray-400 mb-1 block">{t.endTime}</label>
+                      <label htmlFor="end-hour" className="text-xs text-gray-600 dark:text-gray-400 mb-1 block">{t.endTime}</label>
                       <input
                         type="time"
                         id="end-hour"
@@ -1207,13 +1102,13 @@ const Dashboard = () => {
 
               {/* Existing Time Blocks List */}
               <div className="glass-panel p-6 rounded-xl">
-                <h4 className="text-lg font-semibold text-white mb-3">{t.existingBlocks}</h4>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{t.existingBlocks}</h4>
                 <div className="space-y-2 max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
                   {filteredTimeBlocks.map(block => (
-                    <div key={block.id} className="bg-gray-700/50 p-3 rounded-lg flex justify-between items-center border-l-4 card-hover" style={{ borderLeftColor: getColor(block.id) }}>
+                    <div key={block.id} className="bg-white dark:bg-gray-700/50 p-3 rounded-lg flex justify-between items-center border-l-4 card-hover shadow-sm" style={{ borderLeftColor: getColor(block.id) }}>
                       <div>
-                        <div className="font-bold text-white text-sm">{block.label}</div>
-                        <div className="text-xs text-gray-400 mt-0.5">
+                        <div className="font-bold text-gray-900 dark:text-white text-sm">{block.label}</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
                           {block.type === 'daily' ? t.daily.split(' ')[0] : 
                            block.type === 'workweek' ? t.monFri :
                            block.type === 'single' ? block.date :
@@ -1254,6 +1149,8 @@ const Dashboard = () => {
             date: t.date,
             time: t.time,
             event: t.event,
+            allDay: t.allDay,
+            showMore: (total) => `+${total} ${t.showMore}`
           }}
           // Controlled State for Buttons to Work
           view={view}
@@ -1277,6 +1174,12 @@ const Dashboard = () => {
 
           // Drag to Drop Task
           components={{
+            // This allows you to replace the default header you found
+            header: ({ date, label }) => (
+              <div className="custom-header">
+                {label} {/* Or any custom formatting */}
+              </div>
+            ),
             event: ({ event }) => (
               <div onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleTaskDrop(e, event.resource.id)} className="h-full w-full" title={event.title}>
                 {event.title}
@@ -1320,9 +1223,10 @@ const Dashboard = () => {
             setEditPopover({ show: false, target: null, block: null });
           }}
           onSave={async (blockToSave) => {
-            await handleSaveBlock(blockToSave);
             setEditPopover({ show: false, target: null, block: null });
+            await handleSaveBlock(blockToSave);
           }}
+          t={t}
         />
       )}
       </div>
