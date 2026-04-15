@@ -62,6 +62,9 @@ const Dashboard = () => {
   const [sortBy, setSortBy] = useState(SORT_OPTIONS.NEWEST);
   const [searchTarget, setSearchTarget] = useState(SEARCH_TARGETS.TASK);
   const [activeTab, setActiveTab] = useState('tasks'); // 'tasks' or 'blocks'
+  const [mobileView, setMobileView] = useState('calendar'); // 'sidebar' or 'calendar'
+  const [showFabMenu, setShowFabMenu] = useState(false);
+  const [showMobileTaskModal, setShowMobileTaskModal] = useState(false);
 
   // Reminders State
   const [notifiedIds, setNotifiedIds] = useState(new Set());
@@ -711,9 +714,31 @@ const Dashboard = () => {
         <Notification message={notification?.message} type={notification?.type} />
       </div>
 
-      <div className="flex flex-col lg:flex-row h-[calc(100vh-6rem)] gap-6">
+      {/* Global Mobile Navigation */}
+      <div className="flex lg:hidden p-1 mb-2 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-colors duration-200">
+        <button 
+          onClick={() => { setMobileView('sidebar'); setActiveTab('tasks'); }}
+          className={`flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 ${mobileView === 'sidebar' && activeTab === 'tasks' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'}`}
+        >
+          {t.tasks}
+        </button>
+        <button 
+          onClick={() => { setMobileView('sidebar'); setActiveTab('blocks'); }}
+          className={`flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 ${mobileView === 'sidebar' && activeTab === 'blocks' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'}`}
+        >
+          {t.schedule}
+        </button>
+        <button 
+          onClick={() => setMobileView('calendar')}
+          className={`flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 ${mobileView === 'calendar' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'}`}
+        >
+          Calendar
+        </button>
+      </div>
+
+      <div className="flex flex-col lg:flex-row min-h-[calc(100vh-6rem)] lg:h-[calc(100vh-6rem)] gap-6">
       {/* Left Sidebar: Management */}
-      <div className="w-full lg:w-1/3 flex flex-col gap-4 h-full">
+      <div className={`w-full lg:w-1/3 flex-col gap-4 lg:h-full ${mobileView === 'sidebar' ? 'flex' : 'hidden lg:flex'}`}>
         
         {/* Header & Profile */}
         <div className="flex justify-between items-center px-1 mb-2">
@@ -728,8 +753,8 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex p-1 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 shrink-0 shadow-sm transition-colors duration-200">
+        {/* Tab Navigation (Desktop Only) */}
+        <div className="hidden lg:flex p-1 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 shrink-0 shadow-sm transition-colors duration-200">
           <button 
             onClick={() => setActiveTab('tasks')}
             className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 ${activeTab === 'tasks' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700/50'}`}
@@ -838,22 +863,30 @@ const Dashboard = () => {
                       onChange={e => setNewTask({...newTask, dueTime: e.target.value})}
                     />
                   </div>
-                  <select
-                    multiple
-                    className="input-field h-24"
-                    value={newTask.timeBlockIds}
-                    onChange={e => {
-                      const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
-                      setNewTask({...newTask, timeBlockIds: selectedOptions});
-                    }}
-                  >
-                    <option value="" disabled>{t.attachToBlocks}</option>
-                    {timeBlocks.map(block => (
-                      <option key={block.id} value={block.id}>
-                        {block.label} ({block.type === 'single' ? block.date : block.type})
-                      </option>
-                    ))}
-                  </select>
+                  <div className="input-field min-h-[80px] max-h-40 overflow-y-auto flex flex-col gap-2 p-3 bg-white/50 dark:bg-gray-800/80">
+                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide disabled-text">{t.attachToBlocks}</span>
+                    {timeBlocks.length === 0 ? (
+                      <span className="text-xs text-gray-400 italic">No blocks available</span>
+                    ) : (
+                      timeBlocks.map(block => (
+                        <label key={block.id} className="flex items-center gap-3 cursor-pointer text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors py-1">
+                          <input
+                            type="checkbox"
+                            className="rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-500 text-blue-500 focus:ring-blue-500 w-4 h-4 cursor-pointer"
+                            checked={newTask.timeBlockIds?.includes(block.id) || false}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setNewTask({ ...newTask, timeBlockIds: [...(newTask.timeBlockIds || []), block.id] });
+                              } else {
+                                setNewTask({ ...newTask, timeBlockIds: (newTask.timeBlockIds || []).filter(id => id !== block.id) });
+                              }
+                            }}
+                          />
+                          <span className="truncate">{block.label} ({block.type === 'single' ? block.date : block.type})</span>
+                        </label>
+                      ))
+                    )}
+                  </div>
                   <select
                     className="input-field"
                     value={newTask.reminderMinutes || 0}
@@ -1130,8 +1163,49 @@ const Dashboard = () => {
       </div>
 
       {/* Right Side: Calendar */}
-      <div className="w-full lg:w-2/3 glass-panel p-6 rounded-xl h-full">
-        <DnDCalendar
+      <div className={`w-full lg:w-2/3 glass-panel p-3 md:p-6 rounded-xl flex-col h-[75vh] lg:h-full overflow-hidden ${mobileView === 'calendar' ? 'flex' : 'hidden lg:flex'}`}>
+        
+        {/* Floating Action Button for Mobile Add Block/Task */}
+        <div className="lg:hidden absolute bottom-6 right-6 z-50 flex flex-col items-end gap-2">
+          {showFabMenu && (
+            <div className="flex flex-col gap-2 mb-2 fadeIn">
+              <button 
+                onClick={() => { 
+                  setShowFabMenu(false); 
+                  resetTaskForm(); 
+                  setShowMobileTaskModal(true);
+                }} 
+                className="bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 px-4 py-2 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 text-sm font-bold whitespace-nowrap active:scale-95 transition"
+              >
+                + {t.addTask}
+              </button>
+              <button 
+                onClick={() => { 
+                  setShowFabMenu(false); 
+                  resetBlockForm();
+                  setEditPopover({ 
+                    show: true, 
+                    target: null, 
+                    block: { isPreview: true, type: 'single', startHour: 9, startMinute: 0, endHour: 17, endMinute: 0, date: moment().format('YYYY-MM-DD') } 
+                  });
+                }} 
+                className="bg-white dark:bg-gray-800 text-green-600 dark:text-green-400 px-4 py-2 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 text-sm font-bold whitespace-nowrap active:scale-95 transition"
+              >
+                + {t.createTimeBlock}
+              </button>
+            </div>
+          )}
+          <button
+            className={`bg-blue-600 text-white rounded-full p-4 shadow-2xl shadow-blue-600/50 hover:bg-blue-700 transition transform ${showFabMenu ? 'rotate-45' : ''} active:scale-95 flex items-center justify-center`}
+            onClick={() => setShowFabMenu(!showFabMenu)}
+            title="Options"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/></svg>
+          </button>
+        </div>
+
+        <div className="flex-grow h-full mobile-calendar-wrapper">
+          <DnDCalendar
           localizer={localizer}
           events={calendarEvents}
           startAccessor="start"
@@ -1174,15 +1248,16 @@ const Dashboard = () => {
 
           // Drag to Drop Task
           components={{
-            // This allows you to replace the default header you found
-            header: ({ date, label }) => (
-              <div className="custom-header">
-                {label} {/* Or any custom formatting */}
-              </div>
-            ),
+            header: ({ date, label }) => {
+              return (
+                <div className="text-[10px] md:text-sm font-semibold truncate px-0.5">
+                  {moment(date).format('ddd D')}
+                </div>
+              );
+            },
             event: ({ event }) => (
-              <div onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleTaskDrop(e, event.resource.id)} className="h-full w-full" title={event.title}>
-                {event.title}
+              <div onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleTaskDrop(e, event.resource.id)} className="h-full w-full flex flex-col justify-start" title={event.title}>
+                <span className="text-[10px] md:text-sm font-bold leading-tight truncate">{event.title}</span>
               </div>
             )
           }}
@@ -1208,6 +1283,7 @@ const Dashboard = () => {
           }}
         />
       </div>
+      </div>
       {editPopover.show && (
         <TimeBlockEditPopover
           show={editPopover.show}
@@ -1229,6 +1305,77 @@ const Dashboard = () => {
           t={t}
         />
       )}
+      
+      {/* Mobile Task Modal Overlay */}
+      {showMobileTaskModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto relative">
+            <button onClick={() => setShowMobileTaskModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-white">&times;</button>
+            <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+              {editingTask ? t.editTask : t.addNewTask}
+            </h3>
+            <form onSubmit={async (e) => { await handleSaveTask(e); setShowMobileTaskModal(false); }} className="space-y-4">
+              <input
+                type="text"
+                placeholder={t.taskTitle}
+                className="input-field"
+                value={newTask.title}
+                onChange={e => setNewTask({...newTask, title: e.target.value})}
+                required
+              />
+              <textarea
+                placeholder={t.description}
+                className="input-field min-h-[80px]"
+                value={newTask.description}
+                onChange={e => setNewTask({...newTask, description: e.target.value})}
+              />
+              <div className="flex gap-2">
+                <select className="input-field" value={newTask.priority} onChange={e => setNewTask({...newTask, priority: e.target.value})}>
+                  <option value={TASK_PRIORITIES.LOW}>{t.lowPriority}</option>
+                  <option value={TASK_PRIORITIES.MEDIUM}>{t.mediumPriority}</option>
+                  <option value={TASK_PRIORITIES.HIGH}>{t.highPriority}</option>
+                </select>
+                <select className="input-field" value={newTask.category} onChange={e => setNewTask({...newTask, category: e.target.value})}>
+                  <option value={TASK_CATEGORIES.GENERAL}>{t.general}</option>
+                  <option value={TASK_CATEGORIES.WORK}>{t.work}</option>
+                  <option value={TASK_CATEGORIES.PERSONAL}>{t.personal}</option>
+                  <option value={TASK_CATEGORIES.UNIVERSITY}>{t.university}</option>
+                </select>
+              </div>
+              <div className="flex gap-2">
+                <input type="date" className="input-field" value={newTask.dueDate || ''} onChange={e => setNewTask({...newTask, dueDate: e.target.value})} />
+                <input type="time" className="input-field" value={newTask.dueTime || ''} onChange={e => setNewTask({...newTask, dueTime: e.target.value})} />
+              </div>
+              <div className="input-field min-h-[80px] max-h-40 overflow-y-auto flex flex-col gap-2 p-3 bg-white/50 dark:bg-gray-800/80">
+                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide disabled-text">{t.attachToBlocks}</span>
+                {timeBlocks.length === 0 ? (
+                  <span className="text-xs text-gray-400 italic">No blocks available</span>
+                ) : (
+                  timeBlocks.map(block => (
+                    <label key={block.id} className="flex items-center gap-3 cursor-pointer text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors py-1">
+                      <input
+                        type="checkbox"
+                        className="rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-500 text-blue-500 focus:ring-blue-500 w-4 h-4 cursor-pointer"
+                        checked={newTask.timeBlockIds?.includes(block.id) || false}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setNewTask({ ...newTask, timeBlockIds: [...(newTask.timeBlockIds || []), block.id] });
+                          } else {
+                            setNewTask({ ...newTask, timeBlockIds: (newTask.timeBlockIds || []).filter(id => id !== block.id) });
+                          }
+                        }}
+                      />
+                      <span className="truncate">{block.label} ({block.type === 'single' ? block.date : block.type})</span>
+                    </label>
+                  ))
+                )}
+              </div>
+              <button type="submit" className="w-full btn-primary">{t.save}</button>
+            </form>
+          </div>
+        </div>
+      )}
+      
       </div>
     </>
   );

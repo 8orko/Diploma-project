@@ -9,10 +9,11 @@ import Profile from './pages/Profile';
 import { TRANSLATIONS } from './utils/translations';
 
 const Home = ({ t }) => (
-  <div className="text-center p-10 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 transition-colors duration-200">
-    <h2 className="text-5xl font-bold mb-4 text-gray-900 dark:text-white">{t.welcome}</h2>
-    <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">{t.organize}</p>
-    <Link to="/dashboard" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105">
+  <div className="text-center p-12 md:p-24 glass-panel relative overflow-hidden group">
+    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-teal-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+    <h2 className="text-5xl md:text-7xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 tracking-tight">{t.welcome}</h2>
+    <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto font-light leading-relaxed">{t.organize}</p>
+    <Link to="/dashboard" className="btn-primary inline-block text-lg px-8 py-4">
       {t.goDashboard}
     </Link>
   </div>
@@ -20,6 +21,7 @@ const Home = ({ t }) => (
 
 function App() {
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   // Check for token to determine auth status
   const isAuthenticated = !!localStorage.getItem('token');
 
@@ -61,12 +63,27 @@ function App() {
     <div className="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-200 min-h-screen font-sans transition-colors duration-200">
       <nav className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-sm shadow-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-colors duration-200">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="text-2xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+          <div className="flex items-center justify-between relative">
+            <Link to="/" className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-400 dark:from-blue-400 dark:to-teal-300 hover:opacity-80 transition-opacity">
               TimeBlock
             </Link>
             
-            <div className="flex items-center space-x-6">
+            {/* Mobile Menu Button */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+              className="md:hidden text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+            >
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isMobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center space-x-6">
               <button 
                 onClick={toggleTheme}
                 className="text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-2 py-1 rounded transition-colors"
@@ -99,6 +116,44 @@ function App() {
               )}
             </div>
           </div>
+          
+          {/* Mobile Menu Dropdown */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden mt-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl p-4 shadow-2xl flex flex-col space-y-4 border border-gray-200 dark:border-gray-700 animate-in slide-in-from-top-2">
+              <div className="flex justify-between items-center mb-2">
+                <button 
+                  onClick={toggleTheme}
+                  className="flex-1 mr-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-white py-2 rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
+                >
+                  {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
+                </button>
+                <button 
+                  onClick={toggleLanguage}
+                  className="flex-1 ml-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-white py-2 rounded-lg transition-colors font-medium"
+                >
+                  {language === 'en' ? 'BG' : 'EN'}
+                </button>
+              </div>
+              <Link onClick={() => setIsMobileMenuOpen(false)} to="/dashboard" className="text-gray-700 dark:text-gray-200 font-semibold py-2 px-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                {t.dashboard}
+              </Link>
+              <Link onClick={() => setIsMobileMenuOpen(false)} to="/profile" className="text-gray-700 dark:text-gray-200 font-semibold py-2 px-3 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                {t.profile}
+              </Link>
+              {isAuthenticated ? (
+                <button onClick={() => { setIsMobileMenuOpen(false); handleLogout(); }} className="mt-2 w-full bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 font-bold py-3 rounded-xl transition-colors">
+                  {t.logout}
+                </button>
+              ) : (
+                <div className="flex flex-col space-y-2 mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                  <Link onClick={() => setIsMobileMenuOpen(false)} to="/login" className="text-center text-gray-700 dark:text-gray-200 font-semibold py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition">{t.login}</Link>
+                  <Link onClick={() => setIsMobileMenuOpen(false)} to="/register" className="text-center btn-primary w-full py-3">
+                    {t.register}
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </nav>
 

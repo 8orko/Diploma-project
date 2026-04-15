@@ -62,10 +62,12 @@ const Profile = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen p-4">
-      <div className="glass-panel p-8 rounded-xl w-full max-w-md">
-        <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t.title}</h2>
+    <div className="flex justify-center items-center min-h-[80vh] px-4 py-8">
+      <div className="w-full max-w-md glass-panel p-8 sm:p-10 relative overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-teal-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+        <div className="relative z-10">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 tracking-tight">{t.title}</h2>
             <button onClick={() => navigate('/dashboard')} className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">{t.backBtn}</button>
         </div>
         
@@ -102,9 +104,10 @@ const Profile = () => {
               <input type="password" name="password" value={formData.password} onChange={handleChange} className="input-field" placeholder={t.passwordPlaceholder} />
             </div>
 
-            <button type="submit" className="w-full btn-primary mt-4">{t.saveBtn}</button>
+            <button type="submit" className="w-full btn-primary mt-6">{t.saveBtn}</button>
           </form>
         )}
+        </div>
       </div>
     </div>
   );

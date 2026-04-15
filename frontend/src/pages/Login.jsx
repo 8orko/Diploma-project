@@ -36,9 +36,11 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md p-8 transition-colors duration-200">
-        <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-6">{t.title}</h2>
+    <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
+      <div className="w-full max-w-md glass-panel p-8 sm:p-10 relative overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-teal-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+        <div className="relative z-10">
+          <h2 className="text-3xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 mb-8 tracking-tight">{t.title}</h2>
         <form onSubmit={onSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="sr-only">Email</label>
@@ -74,12 +76,13 @@ const Login = () => {
           </button>
         </form>
         {error && <p className="text-red-500 text-center mt-4">{error}</p>}
-        <p className="text-center text-gray-600 dark:text-gray-400 mt-4">
+        <p className="text-center text-gray-600 dark:text-gray-400 mt-6 font-medium">
           {t.noAccount}{' '}
-          <Link to="/register" className="text-blue-600 dark:text-blue-400 hover:underline">
+          <Link to="/register" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline transition-colors">
             {t.signupLink}
           </Link>
         </p>
+        </div>
       </div>
     </div>
   );

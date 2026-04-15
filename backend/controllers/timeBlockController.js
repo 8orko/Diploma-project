@@ -34,7 +34,7 @@ const createTimeBlock = async (req, res) => {
 const updateTimeBlock = async (req, res) => {
   try {
     const { id } = req.params;
-    const { label, type, startHour, startMinute, endHour, endMinute, dayOfWeek, date, isAllDay, reminderMinutes } = req.body;
+    const { label, type, startHour, startMinute, endHour, endMinute, dayOfWeek, date, isAllDay, reminderMinutes, excludedDates } = req.body;
     const block = await TimeBlock.findOne({ where: { id, userId: req.user.id } });
 
     if (!block) {
@@ -51,7 +51,8 @@ const updateTimeBlock = async (req, res) => {
       dayOfWeek,
       date,
       isAllDay,
-      reminderMinutes
+      reminderMinutes,
+      excludedDates
     });
     res.json(updatedBlock);
   } catch (error) {

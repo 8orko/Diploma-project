@@ -34,10 +34,12 @@ const Register = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[80vh]">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-8 rounded-lg shadow-lg transition-colors duration-200">
-        <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white text-center">{t.title}</h2>
-        {error && <div className="bg-red-500 text-white p-3 rounded mb-4">{error}</div>}
+    <div className="flex justify-center items-center min-h-[80vh] px-4 py-8">
+      <div className="w-full max-w-md glass-panel p-8 sm:p-10 relative overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-teal-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+        <div className="relative z-10">
+          <h2 className="text-3xl font-extrabold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 text-center tracking-tight">{t.title}</h2>
+          {error && <div className="bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 p-3 rounded-lg mb-6 font-medium text-sm text-center">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -108,9 +110,10 @@ const Register = () => {
             {t.registerBtn}
           </button>
         </form>
-        <p className="mt-4 text-center text-gray-600 dark:text-gray-400">
-          {t.haveAccount} <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:underline">{t.loginLink}</Link>
+        <p className="mt-6 text-center text-gray-600 dark:text-gray-400 font-medium">
+          {t.haveAccount} <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline transition-colors">{t.loginLink}</Link>
         </p>
+        </div>
       </div>
     </div>
   );
