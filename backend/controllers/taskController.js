@@ -79,6 +79,8 @@ const deleteTask = async (req, res) => {
     const { id } = req.params;
     const task = await Task.findOne({ where: { id, userId: req.user.id } });
     if (task) {
+      const { sequelize } = require('../models');
+      await sequelize.models.TaskTimeBlocks.destroy({ where: { taskId: task.id } });
       await task.destroy();
       res.status(204).send();
     } else {

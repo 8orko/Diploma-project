@@ -80,6 +80,9 @@ const deleteTimeBlock = async (req, res) => {
       // Return the updated block so the frontend can refresh its state
       res.json(block);
     } else { // If deleting the whole series or a non-recurring block
+      // Clean up relations first to prevent SQLite FOREIGN KEY constraint errors
+      const { sequelize } = require('../models');
+      await sequelize.models.TaskTimeBlocks.destroy({ where: { timeBlockId: block.id } });
       await block.destroy();
       res.status(204).send();
     }

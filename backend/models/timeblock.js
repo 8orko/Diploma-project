@@ -30,7 +30,12 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       onDelete: 'CASCADE',
     });
-    TimeBlock.belongsToMany(models.Task, { through: 'TaskTimeBlocks', foreignKey: 'timeBlockId', otherKey: 'taskId' });
+    TimeBlock.belongsToMany(models.Task, { 
+      through: 'TaskTimeBlocks', 
+      foreignKey: 'timeBlockId', 
+      otherKey: 'taskId',
+      onDelete: 'CASCADE'
+    });
   };
   return TimeBlock;
 };

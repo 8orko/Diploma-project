@@ -37,8 +37,8 @@ app.get('/', (req, res) => {
 const startServer = async () => {
   try {
     // Sync all defined models to the DB.
-    // { alter: true } updates the tables to match the models without dropping them.
-    await sequelize.sync({ alter: true });
+    // { alter: true } is not supported well via SQLite due to FOREIGN KEY errors when re-creating tables.
+    await sequelize.sync();
     console.log('Database connection has been established successfully.');
 
     // Start listening for incoming requests

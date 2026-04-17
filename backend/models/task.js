@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       through: 'TaskTimeBlocks',
       foreignKey: 'taskId',
       otherKey: 'timeBlockId',
+      onDelete: 'CASCADE',
     });
   };
   return Task;

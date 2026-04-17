@@ -278,8 +278,8 @@ const Dashboard = () => {
     return generatedEvents;
   }, [timeBlocks, date, view, newBlock, editingBlock, tasks]);
 
-  const findOverlap = (newBlock, ignoreId = null) => {
-    return timeBlocks.find(existingBlock => {
+  const findOverlap = (newBlock, ignoreId = null, blockList = timeBlocks) => {
+    return blockList.find(existingBlock => {
       if (ignoreId && existingBlock.id === ignoreId) {
         return false;
       }
@@ -347,21 +347,21 @@ const Dashboard = () => {
     }
   };
 
-  const handleSaveBlock = async (blockData) => {
+  const handleSaveBlock = async (blockData, currentBlocks = timeBlocks, ignoreIdOverride = null) => {
     const startTotal = blockData.startHour * 60 + blockData.startMinute;
     const endTotal = blockData.endHour * 60 + blockData.endMinute;
     if (startTotal >= endTotal) {
       addNotification(t.startTimeError, 'error');
-      return;
+      return null;
     }
 
     let blockId = blockData.id ?? (editingBlock?.id || null);
     if (blockId === 'preview') blockId = null;
 
-    const conflict = findOverlap(blockData, blockId);
+    const conflict = findOverlap(blockData, ignoreIdOverride || blockId, currentBlocks);
     if (conflict) {
       addNotification(`${t.overlapError} "${conflict.label}" (${String(conflict.startHour).padStart(2,'0')}:${String(conflict.startMinute||0).padStart(2,'0')}).`, 'error');
-      return;
+      return null;
     }
 
     const dataToSave = { ...blockData };
@@ -372,12 +372,18 @@ const Dashboard = () => {
         const res = await apiClient.put(`/timeblocks/${blockId}`, dataToSave);
         setTimeBlocks(prev => prev.map(b => b.id === blockId ? res.data : b));
         addNotification(t.blockUpdated, 'success');
+        resetBlockForm();
+        return res.data;
       } else {
-        await addBlock(dataToSave);
+        const res = await apiClient.post('/timeblocks', dataToSave);
+        setTimeBlocks(prev => [...prev, res.data]);
+        addNotification(t.blockCreated, 'success');
+        resetBlockForm();
+        return res.data;
       }
-      resetBlockForm();
     } catch (error) {
       addNotification(error.response?.data?.message || t.failedToSaveBlock, 'error');
+      return null;
     }
   };
 
@@ -627,7 +633,10 @@ const Dashboard = () => {
         ...originalBlock,
         excludedDates: [...(originalBlock.excludedDates || []), block.eventDate || moment(event.start).format('YYYY-MM-DD')],
       };
-      await handleSaveBlock(updatedOriginalBlock);
+      const savedOriginal = await handleSaveBlock(updatedOriginalBlock, timeBlocks, null);
+      if (!savedOriginal) return; // if it failed to save, abort
+      
+      const updatedBlocks = timeBlocks.map(b => b.id === originalBlock.id ? savedOriginal : b);
       
       const newBlock = {
         ...block,
@@ -639,7 +648,8 @@ const Dashboard = () => {
         endMinute,
       };
       delete newBlock.id;
-      await handleSaveBlock(newBlock);
+      // We explicitly tell it to ignore overlaps with the original block's ID, since it's replacing that occurrence
+      await handleSaveBlock(newBlock, updatedBlocks, originalBlock.id);
     } else {
       const updatedBlock = { ...block, startHour, startMinute, endHour, endMinute, date: moment(start).format('YYYY-MM-DD') };
       await handleSaveBlock(updatedBlock);
@@ -664,7 +674,10 @@ const Dashboard = () => {
             ...originalBlock,
             excludedDates: [...(originalBlock.excludedDates || []), block.eventDate || moment(event.start).format('YYYY-MM-DD')],
         };
-        await handleSaveBlock(updatedOriginalBlock);
+        const savedOriginal = await handleSaveBlock(updatedOriginalBlock, timeBlocks, null);
+        if (!savedOriginal) return;
+
+        const updatedBlocks = timeBlocks.map(b => b.id === originalBlock.id ? savedOriginal : b);
 
         const newBlock = {
             ...block,
@@ -673,7 +686,7 @@ const Dashboard = () => {
             startHour, startMinute, endHour, endMinute
         };
         delete newBlock.id;
-        await handleSaveBlock(newBlock);
+        await handleSaveBlock(newBlock, updatedBlocks, originalBlock.id);
     } else {
         const updatedBlock = { ...block, startHour, startMinute, endHour, endMinute };
         await handleSaveBlock(updatedBlock);
